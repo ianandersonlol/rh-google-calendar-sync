@@ -1,0 +1,21 @@
+{
+  "name": "rh-google-calendar-sync",
+  "version": "1.0.0",
+  "description": "Sync Raid Helper events with Google Calendar",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "sync": "node src/index.js",
+    "dry-run": "node src/index.js --dry-run",
+    "ical": "node src/index.js --ical"
+  },
+  "keywords": ["raid-helper", "google-calendar", "sync"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "googleapis": "^134.0.0",
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.4.5"
+  }
+}
