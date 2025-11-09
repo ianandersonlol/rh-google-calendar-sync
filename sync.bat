@@ -4,9 +4,9 @@ echo Raid Helper Calendar Sync
 echo ========================================
 echo.
 
-REM Check if .env exists
-if not exist ".env" (
-    echo ERROR: .env file not found!
+REM Check if config.env exists
+if not exist "config.env" (
+    echo ERROR: config.env file not found!
     echo Please run setup.bat first.
     echo.
     pause

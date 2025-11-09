@@ -3,7 +3,7 @@ import { EventSync } from './sync.js';
 import { ICalGenerator } from './ical.js';
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: 'config.env' });
 
 async function main() {
   // Check for command line arguments
@@ -21,7 +21,7 @@ async function main() {
   if (icalMode) {
     if (!process.env.RAID_HELPER_API_KEY) {
       console.error('Error: RAID_HELPER_API_KEY is required');
-      console.error('Please set it in your .env file');
+      console.error('Please set it in your config.env file');
       process.exit(1);
     }
 
@@ -76,7 +76,7 @@ async function main() {
   if (missingVars.length > 0) {
     console.error('Error: Missing required environment variables:');
     missingVars.forEach(varName => console.error(`  - ${varName}`));
-    console.error('\nPlease create a .env file based on .env.example');
+    console.error('\nPlease create a config.env file based on config.env.example');
     console.error('\nOr use --ical mode for simpler setup (no Google credentials needed):');
     console.error('  npm start -- --ical');
     process.exit(1);

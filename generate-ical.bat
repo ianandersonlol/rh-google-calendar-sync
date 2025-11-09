@@ -8,10 +8,10 @@ echo NOTE: This does NOT auto-delete cancelled raids.
 echo For full sync with deletions, use sync.bat instead.
 echo.
 
-REM Check if .env exists
-if not exist ".env" (
-    echo ERROR: .env file not found!
-    echo Please run setup.bat first.
+REM Check if config.env exists
+if not exist "config.env" (
+    echo ERROR: config.env file not found!
+    echo Please create it by copying config.env.example and filling in your API key.
     echo.
     pause
     exit /b 1

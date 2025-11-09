@@ -1,5 +1,5 @@
 node_modules/
-.env
+config.env
 credentials.json
 token.json
 sync-state.json

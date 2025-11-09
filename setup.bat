@@ -6,9 +6,9 @@ echo Raid Helper Calendar Sync - Setup
 echo ========================================
 echo.
 
-REM Check if .env already exists
-if exist ".env" (
-    echo WARNING: .env file already exists!
+REM Check if config.env already exists
+if exist "config.env" (
+    echo WARNING: config.env file already exists!
     set /p overwrite="Do you want to overwrite it? (y/n): "
     if /i not "!overwrite!"=="y" (
         echo Setup cancelled.
@@ -18,7 +18,7 @@ if exist ".env" (
     echo.
 )
 
-echo This script will help you create your .env configuration file.
+echo This script will help you create your config.env configuration file.
 echo.
 echo You'll need:
 echo   1. Your Raid Helper API key (from /usersettings apikey in Discord)
@@ -74,9 +74,9 @@ echo.
 REM Token path (usually default is fine)
 set token_path=./token.json
 
-REM Create .env file
+REM Create config.env file
 echo ========================================
-echo Creating .env file...
+echo Creating config.env file...
 echo ========================================
 echo.
 
@@ -92,9 +92,9 @@ echo GOOGLE_CREDENTIALS_PATH=!creds_path!
 echo.
 echo # Google Calendar token path
 echo GOOGLE_TOKEN_PATH=!token_path!
-) > .env
+) > config.env
 
-echo .env file created successfully!
+echo config.env file created successfully!
 echo.
 
 REM Check if credentials.json exists

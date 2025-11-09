@@ -92,9 +92,9 @@ At this point, choose which mode you want to use:
 
 **Skip the Google setup and just create calendar files**
 
-1. In the project folder, find the file `.env.example`
-2. Make a copy of it and name the copy `.env` (remove the .example part)
-3. Open `.env` with Notepad (Windows) or TextEdit (Mac)
+1. In the project folder, find the file `config.env.example`
+2. Make a copy of it and name the copy `config.env` (remove the .example part)
+3. Open `config.env` with Notepad (Windows) or TextEdit (Mac)
 4. Find the line that says `RAID_HELPER_API_KEY=your_raid_helper_api_key_here`
 5. Replace `your_raid_helper_api_key_here` with the API key you copied from Discord
 6. Save and close the file
@@ -156,9 +156,9 @@ This requires a bit more setup, but it's worth it for automatic sync.
 
 #### Part 2: Configure Settings
 
-1. In the project folder, find `.env.example`
-2. Make a copy and name it `.env`
-3. Open `.env` with Notepad or TextEdit
+1. In the project folder, find `config.env.example`
+2. Make a copy and name it `config.env`
+3. Open `config.env` with Notepad or TextEdit
 4. You'll see several lines - edit these:
 
 ```
@@ -304,10 +304,10 @@ This works for both Full Sync and Simple Export modes.
 
 ### Error: "Missing required environment variables"
 
-**Problem:** Your `.env` file isn't set up correctly.
+**Problem:** Your `config.env` file isn't set up correctly.
 
 **Solution:**
-1. Make sure you created a `.env` file (not `.env.example`)
+1. Make sure you created a `config.env` file (not `config.env.example`)
 2. Open it and verify you pasted your Raid Helper API key
 3. Make sure there are no extra spaces around the = sign
 
@@ -320,7 +320,7 @@ This works for both Full Sync and Simple Export modes.
 2. Type `/usersettings apikey` again
 3. Click "Refresh API Key"
 4. Copy the new key
-5. Update your `.env` file with the new key
+5. Update your `config.env` file with the new key
 
 ### Error: "Error reading credentials.json"
 
@@ -361,7 +361,7 @@ This is normal! You created the app yourself, so Google doesn't know about it. J
 
 ## Important Security Information
 
-- Keep your `.env` file private (never share it or upload it online)
+- Keep your `config.env` file private (never share it or upload it online)
 - Keep your `credentials.json` file private
 - If you accidentally share your Raid Helper API key, refresh it immediately in Discord with `/usersettings apikey`
 - The `token.json` file that gets created contains access to your Google Calendar - keep it private too
