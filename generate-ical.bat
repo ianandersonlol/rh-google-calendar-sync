@@ -11,7 +11,7 @@ echo.
 REM Check if config.env exists
 if not exist "config.env" (
     echo ERROR: config.env file not found!
-    echo Please create it by copying config.env.example and filling in your API key.
+    echo Please create it by copying config-example.env to config.env and filling in your API key.
     echo.
     pause
     exit /b 1

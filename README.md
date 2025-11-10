@@ -92,8 +92,8 @@ At this point, choose which mode you want to use:
 
 **Skip the Google setup and just create calendar files**
 
-1. In the project folder, find the file `config.env.example`
-2. Make a copy of it and name the copy `config.env` (remove the .example part)
+1. In the project folder, find the file `config-example.env`
+2. Make a copy of it and name the copy `config.env`
 3. Open `config.env` with Notepad (Windows) or TextEdit (Mac)
 4. Find the line that says `RAID_HELPER_API_KEY=your_raid_helper_api_key_here`
 5. Replace `your_raid_helper_api_key_here` with the API key you copied from Discord
@@ -156,7 +156,7 @@ This requires a bit more setup, but it's worth it for automatic sync.
 
 #### Part 2: Configure Settings
 
-1. In the project folder, find `config.env.example`
+1. In the project folder, find `config-example.env`
 2. Make a copy and name it `config.env`
 3. Open `config.env` with Notepad or TextEdit
 4. You'll see several lines - edit these:
@@ -307,7 +307,7 @@ This works for both Full Sync and Simple Export modes.
 **Problem:** Your `config.env` file isn't set up correctly.
 
 **Solution:**
-1. Make sure you created a `config.env` file (not `config.env.example`)
+1. Make sure you created a `config.env` file (not `config-example.env`)
 2. Open it and verify you pasted your Raid Helper API key
 3. Make sure there are no extra spaces around the = sign
 
