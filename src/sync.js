@@ -1,14 +1,35 @@
 import { RaidHelperClient } from './raidHelper.js';
 import { GoogleCalendarClient } from './googleCalendar.js';
+import readline from 'readline';
 
 export class EventSync {
-  constructor(raidHelperApiKey, googleCredentialsPath, googleTokenPath, calendarId, useSeparateCalendar = false, dryRun = false, timeWindowDays = 10, allTime = false) {
+  constructor(raidHelperApiKey, googleCredentialsPath, googleTokenPath, calendarId, useSeparateCalendar = false, dryRun = false, timeWindowDays = 10, allTime = false, requireConfirmation = false) {
     this.raidHelper = new RaidHelperClient(raidHelperApiKey, timeWindowDays);
     this.googleCalendar = new GoogleCalendarClient(googleCredentialsPath, googleTokenPath);
     this.calendarId = calendarId;
     this.useSeparateCalendar = useSeparateCalendar;
     this.dryRun = dryRun;
     this.allTime = allTime;
+    this.requireConfirmation = requireConfirmation;
+  }
+
+  /**
+   * Ask user for confirmation
+   * @param {string} message - Question to ask
+   * @returns {Promise<boolean>} True if user confirms
+   */
+  async askConfirmation(message) {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    return new Promise((resolve) => {
+      rl.question(`${message} (y/n): `, (answer) => {
+        rl.close();
+        resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
+      });
+    });
   }
 
   /**
@@ -52,17 +73,27 @@ export class EventSync {
 
       const calendarMap = new Map();
       for (const event of calendarEvents) {
-        const raidHelperId = event.extendedProperties?.private?.raidHelperId;
+        // Try to get Raid Helper ID from private property first
+        let raidHelperId = event.extendedProperties?.private?.raidHelperId;
+
+        // If not found, try to extract from iCal UID (for imported events)
+        if (!raidHelperId && event.iCalUID && event.iCalUID.startsWith('raid-helper-')) {
+          // Extract ID from UID format: raid-helper-{ID}@raid-helper.dev
+          const match = event.iCalUID.match(/^raid-helper-(\d+)@raid-helper\.dev$/);
+          if (match) {
+            raidHelperId = match[1];
+          }
+        }
+
         if (raidHelperId) {
           calendarMap.set(raidHelperId, event);
         }
       }
 
-      let created = 0;
-      let updated = 0;
-      let deleted = 0;
-
-      console.log('\n--- Planned Changes ---\n');
+      // Collect planned changes
+      const toCreate = [];
+      const toUpdate = [];
+      const toDelete = [];
 
       // Process Raid Helper events
       for (const [raidHelperId, raidHelperEvent] of raidHelperMap) {
@@ -72,62 +103,94 @@ export class EventSync {
         if (existingCalendarEvent) {
           // Event exists - check if it needs updating
           if (this.shouldUpdateEvent(existingCalendarEvent, formattedEvent)) {
-            if (this.dryRun) {
-              console.log(`[UPDATE] ${formattedEvent.title}`);
-              console.log(`  Start: ${formattedEvent.startTime}`);
-              console.log(`  Changes detected (title, time, or description changed)`);
-            } else {
-              await this.googleCalendar.updateEvent(
-                this.calendarId,
-                existingCalendarEvent.id,
-                formattedEvent
-              );
-            }
-            updated++;
+            toUpdate.push({ existing: existingCalendarEvent, formatted: formattedEvent });
           }
           // Remove from calendar map so we know it's been processed
           calendarMap.delete(raidHelperId);
         } else {
           // New event - create it
-          if (this.dryRun) {
-            console.log(`[CREATE] ${formattedEvent.title}`);
-            console.log(`  Start: ${formattedEvent.startTime}`);
-            console.log(`  End: ${formattedEvent.endTime}`);
-            console.log(`  Location: ${formattedEvent.location || 'N/A'}`);
-          } else {
-            await this.googleCalendar.createEvent(this.calendarId, formattedEvent);
-          }
-          created++;
+          toCreate.push(formattedEvent);
         }
       }
 
       // Any events left in calendarMap are no longer in Raid Helper - delete them
       for (const [raidHelperId, calendarEvent] of calendarMap) {
-        if (this.dryRun) {
-          console.log(`[DELETE] ${calendarEvent.summary}`);
-          console.log(`  Reason: Event ${raidHelperId} no longer exists in Raid Helper`);
-          console.log(`  Start was: ${calendarEvent.start?.dateTime || calendarEvent.start?.date}`);
-        } else {
-          console.log(`Event ${raidHelperId} no longer exists in Raid Helper - removing from calendar`);
-          await this.googleCalendar.deleteEvent(this.calendarId, calendarEvent.id);
+        toDelete.push({ raidHelperId, event: calendarEvent });
+      }
+
+      // Show planned changes
+      console.log('\n--- Planned Changes ---\n');
+
+      if (toCreate.length > 0) {
+        console.log(`Will CREATE ${toCreate.length} new event(s):`);
+        toCreate.forEach(event => {
+          console.log(`  + ${event.title}`);
+          console.log(`    Start: ${event.startTime}`);
+        });
+        console.log();
+      }
+
+      if (toUpdate.length > 0) {
+        console.log(`Will UPDATE ${toUpdate.length} event(s):`);
+        toUpdate.forEach(({ formatted }) => {
+          console.log(`  ~ ${formatted.title}`);
+          console.log(`    Start: ${formatted.startTime}`);
+        });
+        console.log();
+      }
+
+      if (toDelete.length > 0) {
+        console.log(`Will DELETE ${toDelete.length} event(s):`);
+        toDelete.forEach(({ event }) => {
+          console.log(`  - ${event.summary}`);
+          console.log(`    (No longer in Raid Helper)`);
+        });
+        console.log();
+      }
+
+      if (toCreate.length === 0 && toUpdate.length === 0 && toDelete.length === 0) {
+        console.log('No changes needed - everything is already in sync!');
+        return { created: 0, updated: 0, deleted: 0 };
+      }
+
+      // Ask for confirmation if required and not in dry-run mode
+      if (!this.dryRun && this.requireConfirmation) {
+        const confirmed = await this.askConfirmation('\nProceed with these changes?');
+        if (!confirmed) {
+          console.log('\nSync cancelled by user.');
+          return { created: 0, updated: 0, deleted: 0 };
         }
-        deleted++;
+        console.log();
+      }
+
+      // Apply changes (unless dry-run)
+      if (!this.dryRun) {
+        console.log('Applying changes...\n');
+
+        for (const event of toCreate) {
+          await this.googleCalendar.createEvent(this.calendarId, event);
+        }
+
+        for (const { existing, formatted } of toUpdate) {
+          await this.googleCalendar.updateEvent(this.calendarId, existing.id, formatted);
+        }
+
+        for (const { raidHelperId, event } of toDelete) {
+          console.log(`Removing event: ${event.summary}`);
+          await this.googleCalendar.deleteEvent(this.calendarId, event.id);
+        }
       }
 
       console.log('\n=== Sync Complete ===');
       if (this.dryRun) {
         console.log('DRY RUN - No actual changes were made');
       }
-      console.log(`Created: ${created} events`);
-      console.log(`Updated: ${updated} events`);
-      console.log(`Deleted: ${deleted} events`);
+      console.log(`Created: ${toCreate.length} events`);
+      console.log(`Updated: ${toUpdate.length} events`);
+      console.log(`Deleted: ${toDelete.length} events`);
       console.log('====================\n');
 
-      if (this.dryRun && (created > 0 || updated > 0 || deleted > 0)) {
-        console.log('To apply these changes, run without --dry-run flag');
-      }
-
-      return { created, updated, deleted };
+      return { created: toCreate.length, updated: toUpdate.length, deleted: toDelete.length };
     } catch (error) {
       console.error('Error during sync:', error);
       throw error;

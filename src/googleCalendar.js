@@ -234,10 +234,20 @@ export class GoogleCalendarClient {
     try {
       const events = await this.getCalendarEvents(calendarId);
 
-      // Filter for events with Raid Helper ID in extended properties
-      return events.filter(event =>
-        event.extendedProperties?.private?.raidHelperId
-      );
+      // Filter for events with Raid Helper ID in extended properties OR iCal UID pattern
+      return events.filter(event => {
+        // Check for private property (full sync events)
+        if (event.extendedProperties?.private?.raidHelperId) {
+          return true;
+        }
+
+        // Check for iCal UID pattern (imported events)
+        if (event.iCalUID && event.iCalUID.startsWith('raid-helper-') && event.iCalUID.endsWith('@raid-helper.dev')) {
+          return true;
+        }
+
+        return false;
+      });
     } catch (error) {
       console.error('Error fetching synced events:', error.message);
       throw error;

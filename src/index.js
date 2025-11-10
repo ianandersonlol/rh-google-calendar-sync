@@ -85,6 +85,9 @@ async function main() {
   // Check for dry-run mode
   const dryRun = args.includes('--dry-run') || args.includes('-d');
 
+  // Check for confirmation mode
+  const requireConfirmation = args.includes('--confirm') || args.includes('-y');
+
   // Create sync instance
   const sync = new EventSync(
     process.env.RAID_HELPER_API_KEY,
@@ -94,7 +97,8 @@ async function main() {
     false, // useSeparateCalendar - determined automatically from calendarId
     dryRun,
     timeWindowDays,
-    allTime
+    allTime,
+    requireConfirmation
   );
 
   try {

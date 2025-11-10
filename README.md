@@ -180,23 +180,36 @@ Leave the other lines as they are.
 
 ## How to Use
 
-### How to Use - Simple Export
+### Quick Start (Windows)
+
+**The easiest way to use this tool on Windows:**
+
+1. Double-click **raid-helper-sync.bat** in the project folder
+2. Follow the menu options:
+   - **Option 1:** Setup your configuration (first time only)
+   - **Option 2:** Generate iCal file for manual import
+   - **Option 3:** Full sync with Google Calendar
+   - **Option 4:** Install dependencies (first time only)
+
+The menu will guide you through everything!
+
+### Manual Usage
+
+If you prefer to run commands manually or are on Mac/Linux:
+
+#### Simple Export (iCal)
 
 **This creates a calendar file you can import into any calendar app.**
 
-**Windows Users:**
-1. Double-click **generate-ical.bat** in the project folder
-2. Wait for it to finish (you'll see messages about events being found)
-3. When it's done, you'll see a file called `raid-helper-events.ics` in the folder
-4. Continue to "Importing into Google Calendar" below
+**Command:**
+```bash
+npm start -- --ical
+```
 
-**Mac/Linux Users:**
-1. Open Terminal
-2. Navigate to the project folder (use `cd` like in Step 3 of setup)
-3. Type: `npm start -- --ical`
-4. Press Enter
-5. Wait for it to finish
-6. Continue to "Importing into Google Calendar" below
+**What it does:**
+- Creates a `raid-helper-events.ics` file
+- Only includes new/updated events (prevents duplicates)
+- You manually import it into your calendar app
 
 **Importing into Google Calendar:**
 1. Open Google Calendar in your web browser
@@ -209,61 +222,56 @@ Leave the other lines as they are.
 8. Your raids will appear in your calendar
 
 **To get new raids:**
-- Run the tool again (double-click generate-ical.bat or run the command)
+- Run the command again
 - Import the new .ics file
 - Only new/updated raids will be added (no duplicates!)
 
 **Note:** This mode cannot automatically remove cancelled raids. You'll need to manually delete those from your calendar.
 
-### How to Use - Full Sync
+**Important:** If you later switch to Full Sync mode, it will recognize your imported events and won't create duplicates!
+
+#### Full Sync with Google Calendar
 
 **This automatically syncs everything with Google Calendar.**
+
+**Command:**
+```bash
+npm start -- --confirm
+```
 
 **First Time Only - Authorize with Google:**
 
 The first time you run it, you need to give the tool permission to access your calendar.
 
-1. Run the sync:
-   - Windows: Double-click **sync.bat**
-   - Mac/Linux: In Terminal, run `npm start`
-
-2. You'll see a message like "Authorize this app by visiting this url:"
-3. Copy the URL and paste it into your web browser
-4. Sign in to Google (use the same account you used for the API setup)
-5. You'll see a warning that says "Google hasn't verified this app"
+1. You'll see a message like "Authorize this app by visiting this url:"
+2. Copy the URL and paste it into your web browser
+3. Sign in to Google (use the same account you used for the API setup)
+4. You'll see a warning that says "Google hasn't verified this app"
    - This is normal! You created the app yourself
    - Click "Advanced"
    - Click "Go to Raid Helper Sync (unsafe)"
    - Click "Continue"
-6. Google will show you a code
-7. Copy the code
-8. Go back to your Command Prompt/Terminal window
-9. Paste the code where it says "Enter the code from that page here:"
-10. Press Enter
+5. Google will show you a code
+6. Copy the code and paste it when prompted
+7. Press Enter
 
-The tool will now sync your raids. This authorization step only happens once.
-
-**After First Time - Regular Use:**
-
-**Windows Users:**
-- One-time sync: Double-click **sync.bat**
-- Test first (dry run): Double-click **sync-dry-run.bat**
-- Continuous sync: Double-click **sync-continuous.bat** (runs every 30 minutes)
-
-**Mac/Linux Users:**
-- One-time sync: `npm start`
-- Test first (dry run): `npm start -- --dry-run`
-- Continuous sync: `npm start -- --continuous`
+This authorization step only happens once.
 
 **What Happens During Sync:**
+- Shows you what will be added, updated, and deleted
+- Asks for confirmation before making changes
 - New raids you signed up for appear in your calendar
 - Raid details get updated if they change
 - Cancelled raids get removed from your calendar
 - Only raids within 10 days before/after today are synced (prevents old events cluttering your calendar)
 
-**To sync all raids (not just recent ones):**
-```
-npm start -- --all-time
+**Additional Options:**
+```bash
+# Sync all raids (not just recent ones)
+npm start -- --confirm --all-time
+
+# Change time window to 30 days
+npm start -- --confirm --time-window 30
 ```
 
 ---
@@ -282,21 +290,15 @@ If you used the recommended setup (`GOOGLE_CALENDAR_ID=separate`), the tool crea
 
 Now all your raids will show in that color, separate from your other calendar events.
 
-### Adjusting Time Window
+### Switching from iCal to Full Sync
 
-By default, only raids within 10 days before/after today are synced. To change this:
+If you start with iCal exports and later want to switch to full sync:
 
-**Sync raids within 30 days instead:**
-```
-npm start -- --time-window 30
-```
+1. Set up your Google Calendar credentials in `config.env`
+2. Run the full sync
+3. The tool will automatically recognize your imported events and won't create duplicates!
 
-**Sync ALL raids (including old ones):**
-```
-npm start -- --all-time
-```
-
-This works for both Full Sync and Simple Export modes.
+This works because both modes use the same event IDs internally.
 
 ---
 
