@@ -25,252 +25,161 @@ This tool takes the raids you've signed up for in Discord (via Raid Helper bot) 
 
 **Choose Simple Export if:** You want quick setup and don't mind occasionally cleaning up old events manually.
 
-## Setup Instructions
+## Quick Start (Windows)
 
-Follow these steps in order. Don't skip any steps.
+**The easiest way to get started:**
 
-### Step 1: Install Node.js
+1. **Install Node.js** (one-time setup)
+   - Go to https://nodejs.org
+   - Download the "LTS" version
+   - Run the installer and click through it
+   - Restart your computer
 
-Node.js is required to run this tool.
+2. **Download this project**
+   - Extract the .zip file to a folder (e.g., Desktop)
 
-**Windows or Mac:**
-1. Go to https://nodejs.org
-2. Download the "LTS" version (the one marked "Recommended for most users")
-3. Run the installer
-4. Click "Next" through all the prompts (default settings are fine)
-5. Restart your computer after installation
+3. **Run the tool**
+   - Double-click `raid-helper-sync.bat`
+   - Choose "Install Dependencies" (first time only)
+   - Choose "Setup/Edit Configuration" and follow the prompts
+   - You're ready to go!
 
-**To verify it worked:**
-- Windows: Open Command Prompt (search for "cmd" in Start menu)
-- Mac: Open Terminal (search for "Terminal" in Spotlight)
-- Type: `node --version`
-- You should see something like `v20.x.x`
-
-### Step 2: Download This Project
-
-1. Download the project files (if you got this as a .zip, extract it somewhere)
-2. Remember where you saved it (e.g., your Desktop or Documents folder)
-
-### Step 3: Install Dependencies
-
-**Windows:**
-1. Open the folder where you extracted the project
-2. Hold Shift and right-click in the folder
-3. Click "Open PowerShell window here" or "Open command window here"
-4. Type: `npm install`
-5. Press Enter and wait (takes 30 seconds to 1 minute)
-
-**Mac:**
-1. Open Terminal
-2. Type `cd ` (with a space after cd)
-3. Drag the project folder into the Terminal window
-4. Press Enter
-5. Type: `npm install`
-6. Press Enter and wait
-
-You should see a bunch of text scroll by. When it's done, you'll see a message about packages being added.
-
-### Step 4: Get Your Raid Helper API Key
-
-1. Open Discord
-2. Go to any server that has the Raid Helper bot
-3. Type this command: `/usersettings apikey`
-4. Raid Helper will show a message with buttons
-5. If you see a key already, copy it. If not, click "Refresh API Key" first
-6. Copy the long string of letters and numbers (this is your API key)
-7. Save it somewhere - you'll need it in the next step
-
-**Important:** Keep this API key private. Don't share it with anyone.
+That's it! The batch file menu will guide you through everything else.
 
 ---
 
-## Configuration
+## Detailed Setup
 
-At this point, choose which mode you want to use:
+### Step 1: Install Node.js
 
-### Option A: Simple Export Mode (5 minutes)
+1. Go to https://nodejs.org
+2. Download the "LTS" version (the one marked "Recommended for most users")
+3. Run the installer with default settings
+4. Restart your computer after installation
 
-**Skip the Google setup and just create calendar files**
+### Step 2: Download This Project
 
-1. In the project folder, find the file `config-example.env`
-2. Make a copy of it and name the copy `config.env`
-3. Open `config.env` with Notepad (Windows) or TextEdit (Mac)
-4. Find the line that says `RAID_HELPER_API_KEY=your_raid_helper_api_key_here`
-5. Replace `your_raid_helper_api_key_here` with the API key you copied from Discord
-6. Save and close the file
+1. Download and extract the project files to a folder
+2. Remember where you saved it (e.g., Desktop or Documents)
 
-**You're done! Skip to the "How to Use - Simple Export" section below.**
+### Step 3: Get Your Raid Helper API Key
 
-### Option B: Full Sync Mode (15-20 minutes)
+1. Open Discord
+2. Go to any server that has the Raid Helper bot
+3. Type: `/usersettings apikey`
+4. Copy the API key shown (or click "Refresh API Key" first if needed)
+5. Keep this private - you'll need it for configuration
 
-**Get automatic sync with Google Calendar**
+### Step 4: Choose Your Mode
 
-This requires a bit more setup, but it's worth it for automatic sync.
+You can use the tool in two ways:
 
-#### Part 1: Set Up Google Calendar API
+**Simple Export Mode (5 minutes setup):**
+- Creates a calendar file (.ics) you can import
+- Only need your Raid Helper API key
+- Cannot automatically remove cancelled raids
+
+**Full Sync Mode (15-20 minutes setup):**
+- Automatically adds, updates, and removes events
+- Requires Google Calendar API setup (see below)
+- Shows you changes before applying them
+
+---
+
+## Google Calendar API Setup (Full Sync Mode Only)
+
+Skip this if you're using Simple Export mode. The batch file will guide you through configuration after you complete this.
+
+### Create Google Cloud Project
 
 1. Go to https://console.cloud.google.com/
-2. Sign in with your Google account (the one you use for Google Calendar)
-3. You'll see a page with a lot of options - don't panic
+2. Sign in with your Google account
+3. Click "Select a project" at the top → "New Project"
+4. Name it "Raid Helper Sync" and click "Create"
 
-**Create a Project:**
-1. At the top of the page, click "Select a project"
-2. Click "New Project"
-3. Name it "Raid Helper Sync" (or anything you want)
-4. Click "Create"
-5. Wait a few seconds for it to create
+### Enable Google Calendar API
 
-**Enable Google Calendar API:**
-1. On the left sidebar, click "APIs & Services"
-2. Click "Library"
-3. In the search box, type "Google Calendar API"
-4. Click on "Google Calendar API" from the results
-5. Click the blue "Enable" button
-6. Wait for it to enable (5-10 seconds)
+1. In the left sidebar, click "APIs & Services" → "Library"
+2. Search for "Google Calendar API"
+3. Click on it and click "Enable"
 
-**Create Credentials:**
-1. On the left sidebar, click "Credentials"
-2. At the top, click "Create Credentials"
-3. Select "OAuth client ID"
-4. If it asks you to configure consent screen:
-   - Click "Configure Consent Screen"
-   - Choose "External"
-   - Click "Create"
-   - App name: Type "Raid Helper Sync"
-   - User support email: Choose your email
-   - Developer contact: Type your email
-   - Click "Save and Continue"
-   - Click "Save and Continue" again (skip adding scopes)
-   - Click "Add Users" and add your own email address
-   - Click "Save and Continue"
-   - Click "Back to Dashboard"
-   - Go back to "Credentials" on the left sidebar
-   - Click "Create Credentials" > "OAuth client ID" again
+### Create OAuth Credentials
 
-5. For Application type, choose "Desktop app"
-6. Name it "Raid Helper Sync"
+1. Left sidebar → "Credentials"
+2. Click "Create Credentials" → "OAuth client ID"
+3. If prompted to configure consent screen:
+   - Choose "External" → "Create"
+   - App name: "Raid Helper Sync"
+   - User support email: your email
+   - Developer contact: your email
+   - Click "Save and Continue" through the remaining screens
+   - Add your email under "Test users"
+   - Go back to Credentials
+
+4. Click "Create Credentials" → "OAuth client ID" again
+5. Application type: "Desktop app"
+6. Name: "Raid Helper Sync"
 7. Click "Create"
-8. A popup appears - click "Download JSON"
-9. Save this file in your project folder
-10. Rename it to `credentials.json` (exactly that name)
+8. Click "Download JSON"
+9. Save as `credentials.json` in your project folder
 
-#### Part 2: Configure Settings
-
-1. In the project folder, find `config-example.env`
-2. Make a copy and name it `config.env`
-3. Open `config.env` with Notepad or TextEdit
-4. You'll see several lines - edit these:
-
-```
-RAID_HELPER_API_KEY=paste_your_api_key_here
-GOOGLE_CALENDAR_ID=separate
-GOOGLE_CREDENTIALS_PATH=./credentials.json
-GOOGLE_TOKEN_PATH=./token.json
-```
-
-Replace `paste_your_api_key_here` with your actual Raid Helper API key.
-
-Leave the other lines as they are.
-
-5. Save and close the file
-
-**You're done with setup!** Continue to "How to Use - Full Sync" below.
+**You're done!** Now run `raid-helper-sync.bat` and use the setup menu to configure your API keys.
 
 ---
 
 ## How to Use
 
-### Quick Start (Windows)
+### Windows Users - Use the Menu
 
-**The easiest way to use this tool on Windows:**
+**Double-click `raid-helper-sync.bat`** and choose an option:
 
-1. Double-click **raid-helper-sync.bat** in the project folder
-2. Follow the menu options:
-   - **Option 1:** Setup your configuration (first time only)
-   - **Option 2:** Generate iCal file for manual import
-   - **Option 3:** Full sync with Google Calendar
-   - **Option 4:** Install dependencies (first time only)
+1. **Setup/Edit Configuration** - First time setup or change settings
+2. **Generate iCal File** - Create .ics file to import manually
+3. **Full Sync with Google Calendar** - Automatic sync (shows changes before applying)
+4. **Install Dependencies** - Run this first time only
 
-The menu will guide you through everything!
+The menu handles everything!
 
-### Manual Usage
+### Importing iCal Files (Option 2)
 
-If you prefer to run commands manually or are on Mac/Linux:
+After generating an .ics file:
 
-#### Simple Export (iCal)
+1. Open Google Calendar in your browser
+2. Click gear icon → Settings → Import & Export
+3. Choose `raid-helper-events.ics`
+4. Click Import
 
-**This creates a calendar file you can import into any calendar app.**
+**Note:** If you later switch to Full Sync (Option 3), it will recognize your imported events and won't create duplicates!
 
-**Command:**
+### First-Time Google Authorization (Option 3)
+
+When you first run Full Sync, you'll need to authorize the app:
+
+1. A URL will appear - copy it and open in your browser
+2. Sign in to Google
+3. You'll see "Google hasn't verified this app" - this is normal!
+   - Click "Advanced" → "Go to Raid Helper Sync (unsafe)" → "Continue"
+4. Copy the code shown and paste it back in the command window
+5. Done! This only happens once.
+
+### Advanced Users - Command Line
+
+**Simple Export:**
 ```bash
 npm start -- --ical
 ```
 
-**What it does:**
-- Creates a `raid-helper-events.ics` file
-- Only includes new/updated events (prevents duplicates)
-- You manually import it into your calendar app
-
-**Importing into Google Calendar:**
-1. Open Google Calendar in your web browser
-2. Click the gear icon in the top right
-3. Click "Settings"
-4. On the left side, click "Import & Export"
-5. Click "Select file from your computer"
-6. Choose the `raid-helper-events.ics` file
-7. Click "Import"
-8. Your raids will appear in your calendar
-
-**To get new raids:**
-- Run the command again
-- Import the new .ics file
-- Only new/updated raids will be added (no duplicates!)
-
-**Note:** This mode cannot automatically remove cancelled raids. You'll need to manually delete those from your calendar.
-
-**Important:** If you later switch to Full Sync mode, it will recognize your imported events and won't create duplicates!
-
-#### Full Sync with Google Calendar
-
-**This automatically syncs everything with Google Calendar.**
-
-**Command:**
+**Full Sync:**
 ```bash
 npm start -- --confirm
 ```
 
-**First Time Only - Authorize with Google:**
-
-The first time you run it, you need to give the tool permission to access your calendar.
-
-1. You'll see a message like "Authorize this app by visiting this url:"
-2. Copy the URL and paste it into your web browser
-3. Sign in to Google (use the same account you used for the API setup)
-4. You'll see a warning that says "Google hasn't verified this app"
-   - This is normal! You created the app yourself
-   - Click "Advanced"
-   - Click "Go to Raid Helper Sync (unsafe)"
-   - Click "Continue"
-5. Google will show you a code
-6. Copy the code and paste it when prompted
-7. Press Enter
-
-This authorization step only happens once.
-
-**What Happens During Sync:**
-- Shows you what will be added, updated, and deleted
-- Asks for confirmation before making changes
-- New raids you signed up for appear in your calendar
-- Raid details get updated if they change
-- Cancelled raids get removed from your calendar
-- Only raids within 10 days before/after today are synced (prevents old events cluttering your calendar)
-
-**Additional Options:**
+**Options:**
 ```bash
-# Sync all raids (not just recent ones)
+# Sync all events (not just 10 days before/after)
 npm start -- --confirm --all-time
 
-# Change time window to 30 days
+# Change time window
 npm start -- --confirm --time-window 30
 ```
 
