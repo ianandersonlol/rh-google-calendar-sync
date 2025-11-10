@@ -35,8 +35,9 @@ This tool takes the raids you've signed up for in Discord (via Raid Helper bot) 
    - Run the installer and click through it
    - Restart your computer
 
-2. **Download this project**
-   - Extract the .zip file to a folder (e.g., Desktop)
+2. **Get this project**
+   - **Option A:** Download the .zip file and extract it to a folder (e.g., Desktop)
+   - **Option B:** Clone with git: `git clone https://github.com/ianandersonlol/rh-google-calendar-sync.git`
 
 3. **Run the tool**
    - Double-click `raid-helper-sync.bat`
@@ -57,10 +58,16 @@ That's it! The batch file menu will guide you through everything else.
 3. Run the installer with default settings
 4. Restart your computer after installation
 
-### Step 2: Download This Project
+### Step 2: Get This Project
 
-1. Download and extract the project files to a folder
-2. Remember where you saved it (e.g., Desktop or Documents)
+**Option A - Download:**
+1. Download the .zip file from GitHub
+2. Extract it to a folder (e.g., Desktop or Documents)
+
+**Option B - Clone with Git:**
+```bash
+git clone https://github.com/ianandersonlol/rh-google-calendar-sync.git
+```
 
 ### Step 3: Get Your Raid Helper API Key
 
