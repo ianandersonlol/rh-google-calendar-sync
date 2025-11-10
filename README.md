@@ -194,15 +194,26 @@ npm start -- --confirm --time-window 30
 
 ## Security & Privacy
 
-**Your calendar data is safe:**
+**Your calendar data is safe with multiple layers of protection:**
 
-- The app creates a dedicated "Raid Helper Events" calendar
-- It ONLY accesses this specific calendar - never your other calendars
-- The code enforces this with validation checks on every operation
-- If someone tries to access other calendars, the app will refuse
-- Uses restricted OAuth scope (`calendar.events`) instead of full calendar access
+1. **Dedicated Calendar Only**
+   - The app creates a separate "Raid Helper Events" calendar
+   - It searches for this calendar by name and reuses it if it already exists
+   - Will never create duplicate calendars
 
-You can verify this by checking the calendar description - it says "This app only has access to this calendar".
+2. **Code-Level Validation**
+   - Every operation validates the calendar ID before executing
+   - If code tries to access any other calendar, it throws an error
+   - Multiple safeguards prevent accessing your primary or other calendars
+
+3. **Restricted OAuth Permissions**
+   - Uses `calendar.events` scope (events only, not calendar settings)
+   - More restrictive than full `calendar` access
+   - Note: Google doesn't offer per-calendar permissions, so OAuth technically grants access to all calendars, BUT the code enforces strict isolation
+
+**Defense in Depth:** Think of it like OAuth giving the app a key to the building, but the code only knows one room number and refuses to open any other doors.
+
+You can verify the calendar description says "This app only has access to this calendar".
 
 **Important:** If you used this tool before this security update, delete your `token.json` file and re-authorize to get the new restricted permissions.
 
