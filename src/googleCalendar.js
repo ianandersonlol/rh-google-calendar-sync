@@ -9,6 +9,17 @@ export class GoogleCalendarClient {
     this.tokenPath = tokenPath;
     this.auth = null;
     this.calendar = null;
+    this.raidHelperCalendarId = null; // Track the dedicated calendar ID
+  }
+
+  /**
+   * Validate that we're only accessing the Raid Helper calendar
+   * @param {string} calendarId - Calendar ID to validate
+   */
+  validateCalendarAccess(calendarId) {
+    if (this.raidHelperCalendarId && calendarId !== this.raidHelperCalendarId) {
+      throw new Error(`SECURITY: Attempted to access calendar ${calendarId} but only ${this.raidHelperCalendarId} is allowed`);
+    }
   }
 
   /**
@@ -38,7 +49,7 @@ export class GoogleCalendarClient {
   async getNewToken() {
     const authUrl = this.auth.generateAuthUrl({
       access_type: 'offline',
-      scope: ['https://www.googleapis.com/auth/calendar'],
+      scope: ['https://www.googleapis.com/auth/calendar.events'],
     });
 
     console.log('Authorize this app by visiting this url:', authUrl);
@@ -79,6 +90,7 @@ export class GoogleCalendarClient {
 
       if (existingCalendar) {
         console.log('Using existing Raid Helper Events calendar');
+        this.raidHelperCalendarId = existingCalendar.id;
         return existingCalendar.id;
       }
 
@@ -87,14 +99,16 @@ export class GoogleCalendarClient {
       const calendar = await this.calendar.calendars.insert({
         requestBody: {
           summary: 'Raid Helper Events',
-          description: 'Events synced from Raid Helper Discord bot',
+          description: 'Events synced from Raid Helper Discord bot - This app only has access to this calendar',
           timeZone: 'UTC',
         },
       });
 
       console.log('Raid Helper Events calendar created!');
       console.log('You can now set a custom color for it in Google Calendar.');
+      console.log('SECURITY: This app only accesses this dedicated calendar, not your other calendars.');
 
+      this.raidHelperCalendarId = calendar.data.id;
       return calendar.data.id;
     } catch (error) {
       console.error('Error creating/finding calendar:', error.message);
@@ -108,6 +122,7 @@ export class GoogleCalendarClient {
    * @returns {Promise<Array>} Array of calendar events
    */
   async getCalendarEvents(calendarId) {
+    this.validateCalendarAccess(calendarId);
     try {
       const response = await this.calendar.events.list({
         calendarId: calendarId,
@@ -130,6 +145,7 @@ export class GoogleCalendarClient {
    * @returns {Promise<Object>} Created event
    */
   async createEvent(calendarId, eventData) {
+    this.validateCalendarAccess(calendarId);
     try {
       const event = {
         summary: eventData.title,
@@ -172,6 +188,7 @@ export class GoogleCalendarClient {
    * @returns {Promise<Object>} Updated event
    */
   async updateEvent(calendarId, eventId, eventData) {
+    this.validateCalendarAccess(calendarId);
     try {
       const event = {
         summary: eventData.title,
@@ -212,6 +229,7 @@ export class GoogleCalendarClient {
    * @param {string} eventId - Google Calendar event ID
    */
   async deleteEvent(calendarId, eventId) {
+    this.validateCalendarAccess(calendarId);
     try {
       await this.calendar.events.delete({
         calendarId: calendarId,

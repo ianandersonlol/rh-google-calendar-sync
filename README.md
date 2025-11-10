@@ -192,11 +192,25 @@ npm start -- --confirm --time-window 30
 
 ---
 
+## Security & Privacy
+
+**Your calendar data is safe:**
+
+- The app creates a dedicated "Raid Helper Events" calendar
+- It ONLY accesses this specific calendar - never your other calendars
+- The code enforces this with validation checks on every operation
+- If someone tries to access other calendars, the app will refuse
+- Uses restricted OAuth scope (`calendar.events`) instead of full calendar access
+
+You can verify this by checking the calendar description - it says "This app only has access to this calendar".
+
+**Important:** If you used this tool before this security update, delete your `token.json` file and re-authorize to get the new restricted permissions.
+
 ## Additional Features
 
 ### Customizing Calendar Color (Full Sync Only)
 
-If you used the recommended setup (`GOOGLE_CALENDAR_ID=separate`), the tool creates a separate "Raid Helper Events" calendar. You can give it its own color to make raids easy to spot:
+The tool creates a separate "Raid Helper Events" calendar. You can give it its own color to make raids easy to spot:
 
 1. Open Google Calendar in your web browser
 2. Look at the left sidebar under "My calendars"

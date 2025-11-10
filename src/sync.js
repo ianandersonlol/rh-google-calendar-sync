@@ -40,9 +40,18 @@ export class EventSync {
     await this.googleCalendar.authenticate();
     console.log('Google Calendar authenticated successfully');
 
-    // If using separate calendar, create or find it
-    if (this.useSeparateCalendar || this.calendarId === 'separate') {
+    // SECURITY: Always use a separate dedicated calendar
+    // This ensures we never touch the user's primary calendar or other calendars
+    if (this.calendarId === 'primary') {
+      console.warn('\nWARNING: Using primary calendar is not recommended for security reasons.');
+      console.warn('The app will create a dedicated "Raid Helper Events" calendar instead.\n');
+      this.calendarId = 'separate';
+    }
+
+    // Create or find the dedicated Raid Helper calendar
+    if (this.useSeparateCalendar || this.calendarId === 'separate' || !this.calendarId) {
       this.calendarId = await this.googleCalendar.getOrCreateRaidHelperCalendar();
+      console.log('Using dedicated "Raid Helper Events" calendar for security');
     }
   }
 

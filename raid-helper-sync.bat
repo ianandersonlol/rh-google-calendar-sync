@@ -80,10 +80,11 @@ set /p google_setup="(Press 'n' if you only want iCal export): "
 
 if /i "!google_setup!"=="y" (
     echo.
-    echo Recommended: Press Enter to use 'separate' (creates a dedicated calendar)
+    echo SECURITY: For your privacy, this app will create a dedicated calendar
+    echo called "Raid Helper Events" and ONLY access that calendar.
+    echo It will NOT touch your other calendars.
     echo.
-    set /p calendar_id="Calendar ID (press Enter for 'separate'): "
-    if "!calendar_id!"=="" set calendar_id=separate
+    set calendar_id=separate
 
     echo.
     set /p creds_path="Google credentials file path (press Enter for './credentials.json'): "
